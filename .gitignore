@@ -1,0 +1,4 @@
+# Ignorer tout dans le dossier video
+videos/*
+data/*
+

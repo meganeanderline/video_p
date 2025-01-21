@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  script1:
+    build: .
+    volumes:
+      - ./app:/project/app
+      - ./videos:/project/videos
+      - ./data:/project/data
+    command: python app/script1.py
+
+  script2:
+    build: .
+    volumes:
+      - ./app:/project/app
+      - ./videos:/project/videos
+      - ./data:/project/data
+    depends_on:
+      - script1
+    command: sh -c 'while [ ! -f /project/data/output_240p.mp4 ] || [ ! -f /project/data/output_360p.mp4 ] || [ ! -s /project/data/output_240p.mp4 ] || [ ! -s /project/data/output_360p.mp4 ] || ! ffmpeg -v error -i /project/data/output_240p.mp4 -f null - 2>/dev/null || ! ffmpeg -v error -i /project/data/output_360p.mp4 -f null - 2>/dev/null; do sleep 1; done && python app/script2.py'
+
+  script3:
+    build: .
+    volumes:
+      - ./app:/project/app
+      - ./videos:/project/videos
+      - ./data:/project/data
+    depends_on:
+      - script2
+    command: sh -c 'while [ ! -f /project/data/output_240p.mp4 ] || [ ! -f /project/data/output_360p.mp4 ] || [ ! -s /project/data/output_240p.mp4 ] || [ ! -s /project/data/output_360p.mp4 ] || [ ! -f /project/data/languages_detected/output_240p.mp4_langue.txt ] || [ ! -f /project/data/languages_detected/output_360p.mp4_langue.txt ] || [ ! -s /project/data/languages_detected/output_240p.mp4_langue.txt ] || [ ! -s /project/data/languages_detected/output_360p.mp4_langue.txt ]; do sleep 1; done && python app/script3.py'
